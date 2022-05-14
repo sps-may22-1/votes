@@ -8,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Tuple;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 @Service
 public class VoteService {
 
@@ -25,17 +30,21 @@ public class VoteService {
     }
 
     public VoteStats getStats() {
-        long totalY = repository.count(Example.of(Vote.builder()
-                .value(VoteValue.Y)
-                .build()));
+        List<Tuple> rawStatTuples = repository.getStats();
 
-        long totalN = repository.count(Example.of(Vote.builder()
-                .value(VoteValue.N)
-                .build()));
+        Map<VoteValue, Long> rawStats = new TreeMap<>();
+
+        for (Tuple rawStatTuple : rawStatTuples) {
+            VoteValue voteValue = (VoteValue) rawStatTuple.get("voteValue");
+
+            long voteTotal = (Long) rawStatTuple.get("voteTotal");
+
+            rawStats.put(voteValue, voteTotal);
+        }
 
         return VoteStats.builder()
-                .totalY(totalY)
-                .totalN(totalN)
+                .totalY(rawStats.get(VoteValue.Y))
+                .totalN(rawStats.get(VoteValue.N))
                 .build();
     }
 }
