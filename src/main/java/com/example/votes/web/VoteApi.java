@@ -1,11 +1,14 @@
 package com.example.votes.web;
 
 import com.example.votes.app.domain.Vote;
+import com.example.votes.app.domain.VoteStats;
 import com.example.votes.app.domain.VoteValue;
 import com.example.votes.app.service.VoteService;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +34,16 @@ public class VoteApi {
 
         return response;
     }
+
+    @GetMapping(path = "/votes/stats")
+    public GetVoteStatsResponse getStats() {
+        VoteStats voteStats = service.getStats();
+
+        return GetVoteStatsResponse.builder()
+                .totalY(voteStats.getTotalY())
+                .totalN(voteStats.getTotalN())
+                .build();
+    }
 }
 
 @Getter
@@ -46,4 +59,13 @@ class SaveVoteRequest {
 @Setter
 class SaveVoteResponse {
     private boolean isSaved;
+}
+
+@Getter
+@Builder
+class GetVoteStatsResponse {
+
+    private final long totalY;
+
+    private final long totalN;
 }
