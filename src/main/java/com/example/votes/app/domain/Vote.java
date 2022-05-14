@@ -1,5 +1,8 @@
 package com.example.votes.app.domain;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.Type;
 
@@ -14,11 +17,15 @@ import java.util.UUID;
 /**
  * Результат голосования.
  */
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "votes")
 @Check(constraints = "value in ('Y', 'N')")
 public class Vote {
 
+    @EqualsAndHashCode.Include
     @Id
     @Type(type = "uuid-char")
     @Column(length = 36)
@@ -27,20 +34,4 @@ public class Vote {
     @Column(length = 1, nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private VoteValue value;
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public VoteValue getValue() {
-        return value;
-    }
-
-    public void setValue(VoteValue value) {
-        this.value = value;
-    }
 }
