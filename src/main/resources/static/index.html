@@ -47,8 +47,8 @@
         eventSource.onmessage = function(message) {
             const data = JSON.parse(message.data);
 
-            document.getElementById('totalY').innerText = data.totalY;
-            document.getElementById('totalN').innerText = data.totalN;
+            $('#totalY').text(data.totalY);
+            $('#totalN').text(data.totalN);
         }
 
         function randomUuid() {
