@@ -6,6 +6,7 @@ import com.example.votes.app.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,9 @@ public class VoteService {
     @Autowired
     private CacheManager cacheManager;
 
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
     public boolean save(Vote vote) {
         if (repository.existsByUserId(vote.getUserId())) {
             return false;
@@ -27,6 +31,8 @@ public class VoteService {
         repository.save(vote);
 
         cacheManager.getCache(VOTE_STATS_CACHE_NAME).clear();
+
+        applicationEventPublisher.publishEvent(new VoteStatsChangedEvent("vote stats changed"));
 
         return true;
     }
