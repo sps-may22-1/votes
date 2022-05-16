@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,6 +80,7 @@ public class VoteApi {
         return voteStatsStream;
     }
 
+    @Async
     @EventListener
     public void on(VoteStatsChangedEvent event) throws Exception {
         notifyVoteStatsStreams(voteStatsStreams);
