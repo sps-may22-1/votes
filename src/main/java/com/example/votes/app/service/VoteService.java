@@ -24,17 +24,15 @@ public class VoteService {
     private ApplicationEventPublisher applicationEventPublisher;
 
     public boolean save(Vote vote) {
-        if (repository.existsByUserId(vote.getUserId())) {
-            return false;
+        if (repository.saveOnce(vote) == 1) {
+            cacheManager.getCache(VOTE_STATS_CACHE_NAME).clear();
+
+            applicationEventPublisher.publishEvent(new VoteStatsChangedEvent("vote stats changed"));
+
+            return true;
         }
 
-        repository.save(vote);
-
-        cacheManager.getCache(VOTE_STATS_CACHE_NAME).clear();
-
-        applicationEventPublisher.publishEvent(new VoteStatsChangedEvent("vote stats changed"));
-
-        return true;
+        return false;
     }
 
     @Cacheable(VOTE_STATS_CACHE_NAME)
